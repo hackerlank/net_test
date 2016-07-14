@@ -33,4 +33,6 @@ int main()
 	event_free(timeout_event);
 	event_free(signal_event);
 	event_base_free(base);
+	
+	return 0;
 }

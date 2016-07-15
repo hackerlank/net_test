@@ -4,6 +4,7 @@
 
 #include <unistd.h>
 #include <event.h>
+#include <event2/util.h>
 
 void accept_cb(int fd, short event, void* arg);
 void socket_read_cb(int fd, short event, void* arg);

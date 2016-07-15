@@ -15,7 +15,7 @@ int tcp_server_init(int port, int listen_num);
 
 int main(int argc, char** argv)
 {
-	int listener = tcp_server_init(9999, 10);
+	int listener = tcp_server_init(12345, 5);
 	if(listener == -1)
 	{
 		printf("tcp_server_init error");
@@ -101,6 +101,7 @@ int tcp_server_init(int port, int listen_num)
 	
 	if(::bind(listener, (sockaddr*)&sin, sizeof(sin)) < 0 )
 	{
+		printf("bind error");
 		//errno_save = errno;
 		evutil_closesocket(listener);
 		//errno = errno_save;
@@ -109,6 +110,7 @@ int tcp_server_init(int port, int listen_num)
 	
 	if(::listen(listener, listen_num) < 0)
 	{
+		printf("listen error");
 		evutil_closesocket(listener);
 		return -1;
 	}

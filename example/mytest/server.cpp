@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-void accept_cb(int fd, short event, void* arg)
+void accept_cb(int fd, short events, void* arg)
 {
 	evutil_socket_t sockfd;
 	
@@ -56,7 +56,7 @@ void accept_cb(int fd, short event, void* arg)
 	
 }
 
-void socket_read_cb(int fd, short event, void* arg)
+void socket_read_cb(int fd, short events, void* arg)
 {
 	char msg[4096] = {0};
 	

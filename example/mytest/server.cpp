@@ -1,5 +1,7 @@
 
 #include <stdio.h>
+#include <string.h>
+
 #include <unistd.h>
 #include <event.h>
 
@@ -44,7 +46,7 @@ void accept_cb(int fd, short event, void* arg)
 	
 	event_base* base = (event_base*)arg;
 	
-	event *ev = event_new(NULL, -1, 0, NULL, NULL);
+	struct event *ev = event_new(NULL, -1, 0, NULL, NULL);
 	event_assign(ev, base, sockfd, EV_READ | EV_PERSIST, 
 				socket_read_cb, (void*)ev);
 	
@@ -55,10 +57,70 @@ void accept_cb(int fd, short event, void* arg)
 
 void socket_read_cb(int fd, short event, void* arg)
 {
+	char msg[4096] = {0};
+	
+	event* ev = (event*)arg;
+	int len = read(fd, msg, sizeof(msg) - 1);
+	
+	if(len <= 0) 
+	{
+		printf("some error happen when read \n");
+		close(event_get_fd(ev));
+		event_free(ev);
+		return;
+	}
+	
+	printf("recv the client msg: %s", msg);
+	char reply_msg[4096] = "I have recvied the msg: ";
+	strcat(reply_msg + strlen(reply_msg), msg);
+	
+	write(fd, reply_msg, strlen(reply_msg));
+	
+	
 	
 }
 
 int tcp_server_init(int port, int listen_num)
 {
+	evutil_socket_t listener;
+	
+	listener = ::socket(AF_INET, SOCK_STREAM, 0);
+	if(listener == -1) 
+	{
+		return -1;
+	}
+	
+	evutil_make_listen_socket_reuseable(listener);
+	
+	sockaddr_in sin;
+	sin.sin_family = AF_INET;
+	sin.sin_addr.s_addr = 0;
+	sin.sin_port = htos(port);
+	
+	if(::bind(listener, (sockaddr*)&sin, sizeof(sin)) < 0 )
+	{
+		//errno_save = errno;
+		evutil_closesocket(listener);
+		//errno = errno_save;
+		return -1;
+	}
+	
+	if(::listen(listener, listen_num) < 0)
+	{
+		evutil_closesocket(listener);
+		return -1;
+	}
+	
+	evutil_make_socket_nonblocking(listener);
+	
+	return listener;
 	
 }
+
+
+
+
+
+
+
+

@@ -97,7 +97,7 @@ int tcp_server_init(int port, int listen_num)
 	sockaddr_in sin;
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = 0;
-	sin.sin_port = htos(port);
+	sin.sin_port = htons(port);
 	
 	if(::bind(listener, (sockaddr*)&sin, sizeof(sin)) < 0 )
 	{
